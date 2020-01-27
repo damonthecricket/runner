@@ -31,11 +31,11 @@ class MainViewController: UIViewController, EmiterDelegate {
         startButton?.layer.borderWidth = 2.0
         startButton?.layer.cornerRadius = 3.0
         
-        placeBlock()
+        placeRunner()
         runnerView.backgroundColor = .black
         view.addSubview(runnerView)
         
-        blockView.frame = CGRect(x: view.bounds.width, y: view.bounds.height - Constants.blockSize, width: Constants.blockSize, height: Constants.blockSize)
+        placeBlock()
         blockView.backgroundColor = .red
         view.addSubview(blockView)
         
@@ -47,6 +47,7 @@ class MainViewController: UIViewController, EmiterDelegate {
         blockEmiter.view = blockView
         blockEmiter.xOffset = -1.0
         blockEmiter.timeInterval = 0.001
+        blockEmiter.delegate = self
     }
     
     @IBAction func startButtonTap(sender: UIButton) {
@@ -62,21 +63,34 @@ class MainViewController: UIViewController, EmiterDelegate {
     }
     
     func emiter(_ emiter: Emiter, didMoveView v: UIView) {
-        if emiter == runnerEmiter {
-            if runnerView.frame.minY < 0.0 {
-                runnerEmiter.yOffset = 1.0
-            } else if runnerView.frame.maxY >= view.bounds.height && onJump {
-                runnerEmiter.stop()
-                placeBlock()
-                runnerEmiter.yOffset = -1.0
-                onJump = false
-            }
-        } else if emiter == blockEmiter {
-            
+        if runnerView.frame.minY < 0.0 {
+            runnerEmiter.yOffset = 1.0
+        } else if runnerView.frame.maxY > view.bounds.height && onJump {
+            runnerEmiter.stop()
+            placeRunner()
+            runnerEmiter.yOffset = -1.0
+            onJump = false
+        }
+        
+        if runnerView.frame.intersects(blockView.frame) {
+            runnerEmiter.stop()
+            blockEmiter.stop()
+            placeRunner()
+            placeBlock()
+            onJump = false
+            blindView?.isHidden = false
+        }
+        
+        if blockView.frame.maxX < 0.0 {
+            placeBlock()
         }
     }
     
-    func placeBlock() {
+    func placeRunner() {
         runnerView.frame = CGRect(x: 0.0, y: view.bounds.height - Constants.runnerSize, width: Constants.runnerSize, height: Constants.runnerSize)
+    }
+    
+    func placeBlock() {
+        blockView.frame = CGRect(x: view.bounds.width, y: view.bounds.height - Constants.blockSize, width: Constants.blockSize, height: Constants.blockSize)
     }
 }
