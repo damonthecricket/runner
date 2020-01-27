@@ -14,18 +14,52 @@
                     <view key="view" contentMode="scaleToFill" id="2Ak-3M-TcP">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WPA-6g-0dE">
+                                <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="5hf-za-hBP">
+                                        <rect key="frame" x="132" y="384" width="150" height="50"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="50" id="hrh-cI-Q0n"/>
+                                            <constraint firstAttribute="width" constant="150" id="o6S-Nc-NTH"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                        <state key="normal" title="Start"/>
+                                        <connections>
+                                            <action selector="startButtonTapWithSender:" destination="d2J-uw-m8S" eventType="touchUpInside" id="FCf-ej-Jzs"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.20000000000000001" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="5hf-za-hBP" firstAttribute="centerX" secondItem="WPA-6g-0dE" secondAttribute="centerX" id="Mwj-dJ-Xvi"/>
+                                    <constraint firstItem="5hf-za-hBP" firstAttribute="centerY" secondItem="WPA-6g-0dE" secondAttribute="centerY" id="Ong-UR-a5d"/>
+                                </constraints>
+                            </view>
+                        </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <gestureRecognizers/>
+                        <constraints>
+                            <constraint firstItem="WPA-6g-0dE" firstAttribute="leading" secondItem="Mca-La-PsR" secondAttribute="leading" id="AKq-zA-Pj1"/>
+                            <constraint firstItem="Mca-La-PsR" firstAttribute="trailing" secondItem="WPA-6g-0dE" secondAttribute="trailing" id="Q1J-G9-qhW"/>
+                            <constraint firstItem="Mca-La-PsR" firstAttribute="bottom" secondItem="WPA-6g-0dE" secondAttribute="bottom" id="T99-Z3-oeJ"/>
+                            <constraint firstItem="WPA-6g-0dE" firstAttribute="top" secondItem="Mca-La-PsR" secondAttribute="top" id="aIU-OG-W0y"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="Mca-La-PsR"/>
                         <connections>
                             <outletCollection property="gestureRecognizers" destination="FRi-S5-luP" appends="YES" id="0x0-uh-1Gc"/>
                         </connections>
                     </view>
+                    <connections>
+                        <outlet property="blindView" destination="WPA-6g-0dE" id="nEb-fY-23y"/>
+                        <outlet property="startButton" destination="5hf-za-hBP" id="Okg-98-LeL"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XSg-Mx-DOQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <tapGestureRecognizer id="FRi-S5-luP">
                     <connections>
-                        <action selector="tapGestureRecognizerWithSender:" destination="d2J-uw-m8S" id="c2F-ak-ZP5"/>
+                        <action selector="tapGestureRecognizerWithSender:" destination="d2J-uw-m8S" id="X6Z-XV-sx5"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>

@@ -9,96 +9,74 @@
 import UIKit
 import AudioToolbox
 
-class MainViewController: UIViewController {
-    
+class MainViewController: UIViewController, EmiterDelegate {
     struct Constants {
-        static let jumpDuration: TimeInterval = 0.2
-        static let runnerSize: CGFloat = 100.0
+        static let runnerSize: CGFloat = 50.0
         static let blockSize: CGFloat = 100.0
     }
     
-    var runnerView: UIView = UIView()
-    var blockView: UIView = UIView()
-    var onJump = false
-    var isBlock = false
+    @IBOutlet weak var blindView: UIView?
+    @IBOutlet weak var startButton: UIButton?
+    
+    var runnerView = UIView()
+    var blockView = UIView()
+    var runnerEmiter = Emiter()
+    var blockEmiter = Emiter()
+    var onJump: Bool = false
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        placeRunner()
-        runnerView.backgroundColor = UIColor.green
+        
+        startButton?.layer.borderColor = UIColor(red: 0/255, green: 122/255, blue: 255/255, alpha: 1.0).cgColor
+        startButton?.layer.borderWidth = 2.0
+        startButton?.layer.cornerRadius = 3.0
+        
+        placeBlock()
+        runnerView.backgroundColor = .black
         view.addSubview(runnerView)
         
-        hideBlock()
-        blockView.backgroundColor = UIColor.black
+        blockView.frame = CGRect(x: view.bounds.width, y: view.bounds.height - Constants.blockSize, width: Constants.blockSize, height: Constants.blockSize)
+        blockView.backgroundColor = .red
         view.addSubview(blockView)
         
-        view.bringSubviewToFront(runnerView)
+        runnerEmiter.view = runnerView
+        runnerEmiter.yOffset = -1.0
+        runnerEmiter.timeInterval = 0.001
+        runnerEmiter.delegate = self
         
-        Timer.scheduledTimer(timeInterval: 4.0, target: self, selector: #selector(placeBlockTimerTick(timer:)), userInfo: nil, repeats: true)
-        
-        Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(collideTimerTick(timer:)), userInfo: nil, repeats: true)
+        blockEmiter.view = blockView
+        blockEmiter.xOffset = -1.0
+        blockEmiter.timeInterval = 0.001
     }
     
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        
-        placeRunner()
-        
-        if isBlock {
-            placeBlock()
-        } else {
-            hideBlock()
-        }
+    @IBAction func startButtonTap(sender: UIButton) {
+        blindView?.isHidden = true
+        blockEmiter.start()
     }
     
     @IBAction func tapGestureRecognizer(sender: UITapGestureRecognizer) {
         if !onJump {
             onJump = true
-            UIView.animate(withDuration: Constants.jumpDuration, animations: {
-                self.runnerView.frame = CGRect(x: 0.0, y: self.view.bounds.height - CGFloat(300.0), width: Constants.runnerSize, height: Constants.runnerSize)
-            }, completion: {isFinished in
-                Timer.scheduledTimer(timeInterval: 0.3, target: self, selector: #selector(self.jump(timer:)), userInfo: nil, repeats: false)
-            })
+            runnerEmiter.start()
         }
     }
     
-    @objc func jump(timer: Timer) {
-        UIView.animate(withDuration: Constants.jumpDuration, animations: {
-            self.runnerView.frame = CGRect(x: 0.0, y: self.view.bounds.height - Constants.runnerSize, width: Constants.runnerSize, height: Constants.runnerSize)
-        }, completion: {isFinished in
-            self.onJump = false
-        })
+    func emiter(_ emiter: Emiter, didMoveView v: UIView) {
+        if emiter == runnerEmiter {
+            if runnerView.frame.minY < 0.0 {
+                runnerEmiter.yOffset = 1.0
+            } else if runnerView.frame.maxY >= view.bounds.height && onJump {
+                runnerEmiter.stop()
+                placeBlock()
+                runnerEmiter.yOffset = -1.0
+                onJump = false
+            }
+        } else if emiter == blockEmiter {
+            
+        }
     }
     
-    @objc func placeBlockTimerTick(timer: Timer) {
-        placeBlock()
-        Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(runBlockTimerTick(timer:)), userInfo: nil, repeats: false)
-    }
-    
-    @objc func runBlockTimerTick(timer: Timer) {
-        UIView.animate(withDuration: 1.0, animations: {
-            self.blockView.frame = CGRect(x: -Constants.blockSize, y: self.view.bounds.height - Constants.blockSize, width: Constants.blockSize, height: Constants.blockSize)
-        }, completion: {isFinished in
-            self.hideBlock()
-        })
-    }
-    
-    @objc func collideTimerTick(timer: Timer) {
-        print("runner frame = \(runnerView.frame), block frame = \(blockView.frame)")
-    }
-    
-    private func placeRunner() {
+    func placeBlock() {
         runnerView.frame = CGRect(x: 0.0, y: view.bounds.height - Constants.runnerSize, width: Constants.runnerSize, height: Constants.runnerSize)
-    }
-    
-    private func placeBlock() {
-        blockView.frame = CGRect(x: view.bounds.width - Constants.blockSize, y: view.bounds.height - Constants.blockSize, width: Constants.blockSize, height: Constants.blockSize)
-        isBlock = true
-    }
-    
-    private func hideBlock() {
-        blockView.frame = CGRect(x: view.bounds.width, y: view.bounds.height - Constants.blockSize, width: Constants.blockSize, height: Constants.blockSize)
-        isBlock = false
     }
 }
